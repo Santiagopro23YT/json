@@ -1,6 +1,4 @@
-import { elemento, icono } from './dom.js';
-
-import { describir } from './modulos.js';
+import { elemento, icono } from '../utils/dom.js';
 
 function boton(accion, texto, archivo, estilo = '') {
     const control = elemento('button', `button ${estilo}`.trim());
@@ -12,9 +10,10 @@ function boton(accion, texto, archivo, estilo = '') {
 }
 
 export class CrudView {
-    constructor(contenedor, modulo, referencias) {
+    constructor(contenedor, modulo, referencias, presentacion) {
         this.modulo = modulo;
         this.referencias = referencias;
+        this.presentacion = presentacion;
         this.contenedor = contenedor;
     }
 
@@ -90,9 +89,9 @@ export class CrudView {
         for (const registro of registros) {
             const fila = cuerpo.insertRow();
             fila.setAttribute('role', 'row');
-            const nombre = this.modulo.etiqueta(registro, catalogos);
+            const nombre = this.modulo.etiqueta(registro, catalogos, this.presentacion.describir);
             for (const [, obtenerValor] of this.modulo.columnas) {
-                fila.insertCell().textContent = obtenerValor(registro, catalogos) ?? '';
+                fila.insertCell().textContent = obtenerValor(registro, catalogos, this.presentacion.describir) ?? '';
             }
             const acciones = elemento('div', 'actions');
             for (const [accion, texto, archivo, estilo] of [
@@ -199,7 +198,7 @@ export class CrudView {
             const grupo = elemento('div');
             const coleccion = this.referencias[nombre];
             const valor = coleccion
-                ? describir(coleccion, registro[nombre], catalogos)
+                ? this.presentacion.describir(coleccion, registro[nombre], catalogos)
                 : opciones?.find(opcion => opcion.valor === registro[nombre])?.etiqueta ?? registro[nombre];
             grupo.append(elemento('dt', '', etiqueta), elemento('dd', '', valor || 'Sin datos'));
             datos.append(grupo);
@@ -219,7 +218,7 @@ export class CrudView {
         this.eliminarBoton.dataset.id = String(registro.id);
         acciones.append(boton('listar', 'Cancelar'), this.eliminarBoton);
         contenido.append(
-            elemento('p', '', `¿Eliminar ${this.modulo.articulo} ${this.modulo.singular} «${this.modulo.etiqueta(registro, catalogos)}»?`),
+            elemento('p', '', `¿Eliminar ${this.modulo.articulo} ${this.modulo.singular} «${this.modulo.etiqueta(registro, catalogos, this.presentacion.describir)}»?`),
             acciones,
         );
         this.panel.replaceChildren(contenido);

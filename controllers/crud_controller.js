@@ -1,4 +1,5 @@
-import { opcionesRelacion, modulos } from '../views/modulos.js';
+import { AcademicoModel } from '../models/academico_model.js';
+import { CrudView } from '../views/crud_view.js';
 
 export class CrudController {
     constructor(modelo, vista, signal) {
@@ -79,10 +80,10 @@ export class CrudController {
         const camposFormulario = campos.map(campo => {
             const coleccion = this.modelo.referencias[campo.nombre];
             if (!coleccion) return campo;
-            const opciones = opcionesRelacion(coleccion, catalogos);
+            const opciones = this.vista.presentacion.opcionesRelacion(coleccion, catalogos);
             const fija = Boolean(id && campo.fija);
             if (opciones.length === 0) {
-                errorCatalogo ??= catalogoVacio ?? `Faltan registros en ${modulos[coleccion].nombre}. Agrégalos para continuar.`;
+                errorCatalogo ??= catalogoVacio ?? `Faltan registros en ${this.vista.presentacion.nombre(coleccion)}. Agrégalos para continuar.`;
             } else if (fija && !opciones.some(opcion => opcion.valor === String(datos[campo.nombre]))) {
                 errorCatalogo ??= 'La referencia guardada ya no está disponible.';
             }
@@ -178,4 +179,14 @@ export class CrudController {
             this.vista.bloquearEliminacion(false);
         }
     }
+}
+export function crearModuloCrud(id, reglas, vista) {
+    return {
+        id, reglas, vista,
+        montar(contenedor, signal, entidades, presentacion) {
+            const modelo = new AcademicoModel(id, entidades);
+            const interfaz = new CrudView(contenedor, vista, modelo.referencias, presentacion);
+            new CrudController(modelo, interfaz, signal);
+        },
+    };
 }
