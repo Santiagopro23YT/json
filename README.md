@@ -7,20 +7,20 @@ Aplicativo académico con JavaScript nativo, MVC y JSON Server.
 - Ficha: 3407799
 ## Ejecutar el aplicativo
 
-En una terminal, desde la raíz del proyecto, instala las dependencias e inicia la API:
+Requiere Node.js 22.12.0 o superior y npm. Desde la raíz del proyecto, ejecuta:
 
 ```powershell
 cd server
 npm ci
-npx json-server db.json --port 3000
+npm start
 ```
 
+Ejecuta `npm ci` al instalar las dependencias por primera vez. Para iniciar el
+aplicativo después, usa `npm start` desde `server/`.
 
+Abre [el aplicativo](http://localhost:3000/). JSON Server sirve la interfaz de
+`public/` y la API REST en el mismo puerto. Los datos se guardan en `server/db.json`.
 
-En otra terminal, sirve la raíz con Live Server u otro servidor HTTP y abre
-`index.html` desde su URL local. Si tienes Python 3, por ejemplo, ejecuta
-`python -m http.server 5500 --bind localhost` desde la raíz y abre
-[el aplicativo](http://localhost:5500/). Los módulos JavaScript requieren HTTP.
 
 ## Primer registro
 
